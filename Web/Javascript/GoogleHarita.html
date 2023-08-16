@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Created By Yusefuyn</title>
+  </head>
+  <body style="margin:0px;padding:0px;">
+    <div id="map" style="height:100%;width:100%; position:absolute;"></div>
+    <script>
+      var map;
+      var directionsService = [];
+      var directionsRenderer = [];
+      var markers = [];
+
+      function initMap() {
+        var mapCenter = {
+          lat: 39.9334,
+          lng: 32.8597
+        };
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: mapCenter,
+          zoom: 12});
+      }
+
+      function addPin(latitude = 25, longtitude = 25, pinUri = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png", titleval, labelvalue, colorvalue = "Black") {
+        var marker = new google.maps.Marker({
+          title: titleval,
+          position: {
+            lat: parseFloat(latitude),
+            lng: parseFloat(longtitude)
+          },
+          map: map,
+          icon: {
+            url: pinUri,
+            size: new google.maps.Size(64, 64),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(0, 64)
+          }
+        });
+		
+		const contentString =
+		'<div id="content" style="background-color:#FFF; width:400px; border:2px solid; border-radius: 15px;">' +
+		'<h1 id="firstHeading" class="firstHeading" style="margin:20px; text-align:center;"></h1>' +
+		"</div>";
+		
+		const infowindow = new google.maps.InfoWindow({
+			content: contentString,
+		});
+
+		marker.addListener("click", () => {
+			infowindow.open({
+			  anchor: marker,
+			  map,
+			});
+		});
+		
+        markers.push(marker);
+      }
+
+      function removePinByTitle(title) {
+        for (var i = 0; i < markers.length; i++) {
+          if (markers[i].getTitle() === title) {
+            markers[i].setMap(null);
+            markers.splice(i, 1);
+          }
+        }
+      }
+
+      function returnPinByTitle(title) {
+        for (var i = 0; i < markers.length; i++) {
+          if (markers[i].getTitle() === title) {
+            return markers[i];
+          }
+        }
+      }
+
+      function removeAllPin() {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(null);
+        }
+        markers = [];
+      }
+
+      function RoadRenderer(StartPinByTitle, StopPinByTitle) {
+        var dService = new google.maps.DirectionsService();
+        var dRenderer = new google.maps.DirectionsRenderer();
+        var pin1 = returnPinByTitle(StartPinByTitle);
+        var pin2 = returnPinByTitle(StopPinByTitle);
+        dRenderer.setMap(map);
+        var request = {
+          origin: new google.maps.LatLng(pin1.getPosition().lat(), pin1.getPosition().lng()),
+          destination: new google.maps.LatLng(pin2.getPosition().lat(), pin2.getPosition().lng()),
+          travelMode: 'DRIVING'
+        };
+        dService.route(request, function(result, status) {
+          if (status == 'OK') {
+            dRenderer.setDirections(result);
+            directionsRenderer.push(dRenderer);
+            directionsService.push(dService);
+          }
+        });
+      }
+
+      function setCenter(lat, lng) {
+        var newCenter = {
+          lat: lat,
+          lng: lng
+        };
+        map.setCenter(newCenter);
+      }
+
+      function setZoom(lvl) {
+        map.setZoom(lvl);
+      }
+
+      function removeAllRoute() {
+        for (var i = 0; i < directionsRenderer.length; i++) {
+          directionsRenderer[i].setMap(null);
+          directionsRenderer.splice(i, 1);
+        }
+      }
+
+      function removeRoute(index) {
+        directionsRenderer[index].setMap(null);
+        directionsRenderer.splice(index, 1);
+      }
+      var styles = [{
+        featureType: "poi.business",
+        stylers: [{
+          visibility: "off"
+        }],
+      }];
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=xxx&callback=initMap"></script>
+  </body>
+</html>
