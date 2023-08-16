@@ -1,0 +1,141 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="anonymous"/>
+
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin="anonymous"></script>
+
+        <link rel="stylesheet"
+        href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"
+        integrity="sha256-cu3EeyAbdh7FZ58X4+oQz2g30Tw/U+3Utqmr1ETODqQ="
+        crossorigin="anonymous">
+
+        <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js" 
+        integrity="sha256-W+ggQ0MIhtG5LaUrBTtRqUFHT0m9MnTVJqej3K2Pz2A=" 
+        crossorigin="anonymous"></script>
+
+        <link rel="stylesheet"
+        href="https://unpkg.com/leaflet-openweathermap@1.0.0/leaflet-openweathermap.css"
+        integrity="sha256-X3xBvAxTn2TAdZP633oi/r1sDwcbrJARwObQSr40AUw="
+        crossorigin="anonymous">
+
+        <script src="https://unpkg.com/leaflet-openweathermap@1.0.0/leaflet-openweathermap.js" 
+        integrity="sha256-Mhy4rvf6Xa6v5DhbO0pYApcR/z7x1n2iRvbvMwvPJDs=" 
+        crossorigin="anonymous"></script>
+
+        <title>Created by Yusefuyn</title>
+
+        <style>
+            #map { 
+                height: 100%;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div id="map"></div>
+        <script>
+            var ApiKey = ['bd5e378503939ddaee76f12ad7a97608',''];
+            var map = L.map('map').setView([39.9334, 32.8597], 13);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© Yusefuyn'
+            }).addTo(map); // Leaflet Haritası
+
+            // L.tileLayer('https://{s}.tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={apikey}', {
+            //     layer: 'clouds',
+            //     lang: 'tr',
+            //     temperatureUnit: 'celsius',
+            //     apikey: ApiKey[0]
+            // }).addTo(map); // Hava Durumu Katmanı
+
+            // L.tileLayer('https://{s}.tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={apikey}', {
+            //     layer: 'rain',
+            //     lang: 'tr',
+            //     temperatureUnit: 'celsius',
+            //     apikey: ApiKey[0]
+            // }).addTo(map); // Hava Durumu Katmanı
+           
+            // L.OWM.current({
+            //     appId:  ApiKey[0],
+            //     type: 'rain'
+            // }).addTo(map); // Yağmur Katmanı
+           
+            // L.OWM.current({
+            //     appId:  ApiKey[0],
+            //     type: 'clouds'
+            // }).addTo(map); // Bulut katmanı ekleme
+
+            // L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/traffic-v1/tiles/{z}/{x}/{y}?access_token={apikey}', {
+            //     attribution: '© Yusefuyn',
+            //     apikey:  ApiKey[1]
+            // }).addTo(map); // Trafik Katmanı
+        
+            var markers = [];
+            var routers = [];
+            var circles = [];
+
+            function AddCircle(Lan,Lot,colour='#FF0000',radius=500) {
+                var circle = L.circle([Lan, Lot], {
+                    color: colour,
+                    fillColor: colour + '77',
+                    fillOpacity: 0.5,
+                    radius: radius // Yarıçap metre cinsinden
+                }).addTo(map);
+                circles.push(circle);
+            }
+
+
+            function AddPin(Lan,Lot,Explain,Uri = 'https://i.ibb.co/sJrMTdz/favicon-32x32.png') {
+                var marker = L.marker([Lan, Lot], {icon: L.icon({
+                    iconUrl: Uri,
+                    iconSize: [40, 40]
+                })}).addTo(map);
+			    marker.bindPopup(Explain).openPopup();
+                markers.push(marker);
+            }
+
+            function AddRouter(startPoint = L.latLng(39.9, 32.9),endPoint = L.latLng(40.7, 29.9)) {
+                var route = L.Routing.control({
+                    waypoints: [
+                        startPoint,
+                        endPoint
+                    ]
+                }).addTo(map);
+                routers.push(route);
+            }
+
+            function ZoomIn(value = 1) {
+                var currentZoom = map.getZoom();
+                map.setZoom(currentZoom - value);
+            }
+            
+            function ZoomOut(value = 1) {
+                var currentZoom = map.getZoom();
+                map.setZoom(currentZoom + value);
+            }
+
+            function RemoveRoter(router) {
+                map.removeControl(router);
+                const index = routers.indexOf(router);
+                if (index !== -1) routers.splice(index, 1);
+            }
+
+            function RemovePin(marker) {
+                map.removeLayer(marker);
+                const index = markers.indexOf(marker);
+                if (index !== -1) markers.splice(index, 1);
+            }
+
+            function RemoveCircle(circle) {
+                map.removeLayer(circle);
+                const index = circles.indexOf(circle);
+                if (index !== -1) circles.splice(index, 1);
+            }
+        </script>
+    </body>
+</html>
